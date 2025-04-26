@@ -145,6 +145,23 @@ class Spotify2MP3GUI:
         self.thumb_check.pack(pady=2)
         Tooltip(self.thumb_check, 'Fetch and embed video thumbnails into the audio file.')
 
+        # Spotify album art option
+        self.spotify_art_var = tk.BooleanVar(value=False)
+        self.spotify_art_check = tk.Checkbutton(self.root, text='Get album art from Spotify', variable=self.spotify_art_var)
+        self.spotify_art_check.pack(pady=2)
+        Tooltip(self.spotify_art_check, 'Download album art from Spotify using spotifycover.art')
+        
+        # Spotify link input
+        self.spotify_link_frame = tk.Frame(self.root)
+        self.spotify_link_frame.pack(fill='x', padx=20)
+        self.spotify_link_label = tk.Label(self.spotify_link_frame, text='Spotify Link:')
+        self.spotify_link_label.pack(side='left')
+        self.spotify_link_entry = tk.Entry(self.spotify_link_frame)
+        self.spotify_link_entry.pack(side='left', fill='x', expand=True, padx=(5,0))
+        self.spotify_link_entry.insert(0, 'https://www.spotifycover.art')
+        self.spotify_link_entry.config(state='readonly')
+        Tooltip(self.spotify_link_entry, 'Enter Spotify playlist/album link')
+
         self.convert_button = tk.Button(self.root, text='Convert Playlist', command=self.start_conversion, state=tk.DISABLED)
         self.convert_button.pack(pady=10)
         self.clear_button = tk.Button(self.root, text='Clear', command=self.clear_selection, state=tk.DISABLED)
@@ -226,6 +243,76 @@ class Spotify2MP3GUI:
         os.makedirs(output_dir, exist_ok=True)
         self.last_output_dir = output_dir
         downloaded = []
+
+        # Handle Spotify album art if enabled
+        if self.spotify_art_var.get():
+            try:
+                from selenium import webdriver
+                from selenium.webdriver.common.by import By
+                from selenium.webdriver.common.keys import Keys
+                from selenium.webdriver.support.ui import WebDriverWait
+                from selenium.webdriver.support import expected_conditions as EC
+                from webdriver_manager.chrome import ChromeDriverManager
+                from selenium.webdriver.chrome.service import Service
+                import tempfile
+                import shutil
+                import time
+                
+                # Get the Spotify link from the entry
+                spotify_link = self.spotify_link_entry.get()
+                if not spotify_link or spotify_link == 'https://www.spotifycover.art':
+                    messagebox.showerror('Error', 'Please enter a valid Spotify link')
+                    return
+                
+                # Create a temporary directory for album art
+                temp_dir = tempfile.mkdtemp()
+                
+                # Setup Chrome options
+                chrome_options = webdriver.ChromeOptions()
+                chrome_options.add_argument('--headless')  # Run in headless mode
+                chrome_options.add_argument('--no-sandbox')
+                chrome_options.add_argument('--disable-dev-shm-usage')
+                
+                # Initialize the Chrome driver
+                service = Service(ChromeDriverManager().install())
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                
+                try:
+                    # Navigate to spotifycover.art
+                    driver.get('https://www.spotifycover.art')
+                    
+                    # Wait for the input box to be present
+                    input_box = WebDriverWait(driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="text"]'))
+                    )
+                    
+                    # Clear the input box and enter the Spotify link
+                    input_box.clear()
+                    input_box.send_keys(spotify_link)
+                    input_box.send_keys(Keys.RETURN)
+                    
+                    # Wait for the download button to be present and click it
+                    download_button = WebDriverWait(driver, 10).until(
+                        EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'download all')]"))
+                    )
+                    download_button.click()
+                    
+                    # Wait for the download to complete (you might need to adjust this based on the website's behavior)
+                    time.sleep(5)
+                    
+                    # Move downloaded files to the output directory
+                    for file in os.listdir(temp_dir):
+                        if file.endswith('.jpg'):
+                            shutil.move(os.path.join(temp_dir, file), os.path.join(output_dir, file))
+                
+                finally:
+                    # Clean up
+                    driver.quit()
+                    shutil.rmtree(temp_dir)
+                
+            except Exception as e:
+                messagebox.showerror('Error', f'Failed to download Spotify album art: {str(e)}')
+                return
 
         cfg = self.config
         if platform.system() == "Darwin":  # macOS
