@@ -52,6 +52,11 @@ jobs:
           --add-data "yt-dlp/yt-dlp:yt-dlp" \
           --add-data "config.json:." \
           spotify2media.py
+
+    - name: Zip the app
+      run: |
+          cd dist
+          zip -r Spotify2MP3.zip Spotify2MP3.app
         
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
