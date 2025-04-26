@@ -33,15 +33,16 @@ jobs:
     - name: Download and setup ffmpeg
       run: |
         mkdir -p ffmpeg
+        cd ffmpeg
         curl -L https://evermeet.cx/ffmpeg/ffmpeg-7.1.1.7z -o ffmpeg.7z
-        tar -xvf ffmpeg.7z -C ffmpeg
-        mv ffmpeg/ffmpeg-7.1.1/ffmpeg ffmpeg/
-        rm -rf ffmpeg/ffmpeg-7.1.1 ffmpeg.7z
+        tar -xvf ffmpeg.7z
+        rm -rf ffmpeg.7z
 
     - name: Download and setup yt-dlp
       run: |
         mkdir -p yt-dlp
-        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp/yt-dlp
+        cd yt-dlp
+        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
         chmod +x yt-dlp/yt-dlp
         
     - name: Build with PyInstaller
