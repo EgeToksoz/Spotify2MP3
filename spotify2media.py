@@ -265,7 +265,11 @@ class Spotify2MP3GUI:
         # Save original timestamps
         timestamps = self.get_file_timestamps(audio_file)
         
-        temp_output = f"temp_{audio_file}"
+        # Create temp file in the same directory as the audio file
+        audio_dir = os.path.dirname(audio_file)
+        audio_filename = os.path.basename(audio_file)
+        temp_output = os.path.join(audio_dir, f"temp_{audio_filename}")
+        
         cmd = [
             'ffmpeg', '-i', audio_file,
             '-i', jpg_file,
