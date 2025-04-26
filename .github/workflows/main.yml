@@ -65,4 +65,4 @@ jobs:
         name: Spotify2MP3 v${{ env.LEVEL }}
         draft: true
         prerelease: false
-        files: /Users/runner/work/Spotify2MP3/Spotify2MP3/dist/Spotify2MP3.app
+        files: dist/Spotify2MP3.zip
