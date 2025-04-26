@@ -87,14 +87,13 @@ class Spotify2MP3GUI:
         try:
             if sys.platform == 'darwin':
                 # macOS specific icon handling
-                img = tk.Image("photo", file=icon_path)
+                img = tk.PhotoImage(file=icon_path)
                 self.root.iconphoto(True, img)
             else:
                 self.root.iconbitmap(icon_path)     # Windows-friendly .ico
-        except Exception:
-            # fallback for other platforms / PNG icons
-            img = tk.PhotoImage(file=icon_path)
-            self.root.iconphoto(False, img)
+        except Exception as e:
+            print(f"Warning: Could not load icon: {e}")
+            # No fallback needed - app will run without icon
         if _tkdnd_imported:
             try:
                 root.drop_target_register(DND_FILES)
