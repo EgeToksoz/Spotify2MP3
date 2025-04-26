@@ -256,7 +256,6 @@ class Spotify2MP3GUI:
                 from selenium.webdriver.chrome.service import Service
                 import tempfile
                 import shutil
-                import time
                 
                 # Get the Spotify link from the entry
                 spotify_link = self.spotify_link_entry.get()
@@ -269,7 +268,6 @@ class Spotify2MP3GUI:
                 
                 # Setup Chrome options
                 chrome_options = webdriver.ChromeOptions()
-                chrome_options.add_argument('--headless')  # Run in headless mode
                 chrome_options.add_argument('--no-sandbox')
                 chrome_options.add_argument('--disable-dev-shm-usage')
                 
