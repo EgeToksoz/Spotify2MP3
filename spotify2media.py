@@ -8,6 +8,7 @@ import re
 import json
 import time
 import sys
+import zipfile
 from datetime import timedelta
 from mutagen.easyid3 import EasyID3
 from mutagen.mp4 import MP4, MP4Tags
@@ -77,6 +78,7 @@ class Spotify2MP3GUI:
         self.csv_path = None
         self.output_folder = None
         self.last_output_dir = None
+        self.last_directory = os.path.expanduser("~")  # Start with home directory
         self.config = load_config()
 
         self.setup_ui()
@@ -196,17 +198,22 @@ class Spotify2MP3GUI:
         self.update_convert_button_state()
 
     def browse_csv(self, event=None):
-        path = filedialog.askopenfilename(filetypes=[('CSV files','*.csv')])
+        path = filedialog.askopenfilename(
+            initialdir=self.last_directory,
+            filetypes=[('CSV files','*.csv')]
+        )
         if path:
             self.csv_path = path
+            self.last_directory = os.path.dirname(path)  # Update last directory
             self.drop_label.config(text=f'CSV file: {os.path.basename(path)}')
             self.status_label.config(text='CSV loaded.')
             self.update_convert_button_state()
 
     def select_output_folder(self):
-        path = filedialog.askdirectory()
+        path = filedialog.askdirectory(initialdir=self.last_directory)
         if path:
             self.output_folder = path
+            self.last_directory = path  # Update last directory
             self.output_label.config(text=f'Output folder: {path}')
             self.status_label.config(text='Output folder selected.')
             self.update_convert_button_state()
