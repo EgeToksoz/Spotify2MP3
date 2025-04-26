@@ -43,7 +43,7 @@ jobs:
         mkdir -p yt-dlp
         cd yt-dlp
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
-        chmod +x yt-dlp
+        chmod +x yt-dlp/yt-dlp
         
     - name: Build with PyInstaller
       run: |
@@ -60,4 +60,4 @@ jobs:
         name: Spotify2MP3 v${{ env.LEVEL }}
         draft: true
         prerelease: false
-        files: dist/Spotify2MP3.app
+        files: /Users/runner/work/Spotify2MP3/Spotify2MP3/dist/Spotify2MP3.app
