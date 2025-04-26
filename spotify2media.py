@@ -158,8 +158,8 @@ class Spotify2MP3GUI:
         self.spotify_link_label.pack(side='left')
         self.spotify_link_entry = tk.Entry(self.spotify_link_frame)
         self.spotify_link_entry.pack(side='left', fill='x', expand=True, padx=(5,0))
-        self.spotify_link_entry.insert(0, 'https://www.spotifycover.art')
-        self.spotify_link_entry.config(state='readonly')
+        self.spotify_link_entry.insert(0, 'https://open.spotify.com/playlist/')
+        self.spotify_link_entry.config(state='normal')
         Tooltip(self.spotify_link_entry, 'Enter Spotify playlist/album link')
 
         self.convert_button = tk.Button(self.root, text='Convert Playlist', command=self.start_conversion, state=tk.DISABLED)
