@@ -256,8 +256,7 @@ class Spotify2MP3GUI:
                 from selenium.webdriver.chrome.service import Service
                 import tempfile
                 import shutil
-                
-                # Get the Spotify link from the entry
+            
                 spotify_link = self.spotify_link_entry.get()
                 if not spotify_link or spotify_link == 'https://www.spotifycover.art':
                     messagebox.showerror('Error', 'Please enter a valid Spotify link')
@@ -271,43 +270,61 @@ class Spotify2MP3GUI:
                 chrome_options.add_argument('--no-sandbox')
                 chrome_options.add_argument('--disable-dev-shm-usage')
                 
+                chrome_paths = [
+                        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',  # macOS
+                        'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',   # Windows
+                        'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'  # Windows (x86)
+                ]
+                    
+                chrome_found = False
+                for path in chrome_paths:
+                    if os.path.exists(path):
+                        chrome_options.binary_location = path
+                        chrome_found = True
+                        break
+                    
+                    if not chrome_found:
+                        messagebox.showerror('Error', 'Google Chrome not found. Please install Chrome browser to use this feature.')
+                        return
+                
                 # Initialize the Chrome driver
                 service = Service(ChromeDriverManager().install())
                 driver = webdriver.Chrome(service=service, options=chrome_options)
                 
-                try:
-                    # Navigate to spotifycover.art
-                    driver.get('https://www.spotifycover.art')
-                    
-                    # Wait for the input box to be present
-                    input_box = WebDriverWait(driver, 10).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="text"]'))
-                    )
-                    
-                    # Clear the input box and enter the Spotify link
-                    input_box.clear()
-                    input_box.send_keys(spotify_link)
-                    input_box.send_keys(Keys.RETURN)
-                    
-                    # Wait for the download button to be present and click it
-                    download_button = WebDriverWait(driver, 10).until(
-                        EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), 'download all')]"))
-                    )
-                    download_button.click()
-                    
-                    # Wait for the download to complete (you might need to adjust this based on the website's behavior)
-                    time.sleep(5)
-                    
-                    # Move downloaded files to the output directory
-                    for file in os.listdir(temp_dir):
-                        if file.endswith('.jpg'):
-                            shutil.move(os.path.join(temp_dir, file), os.path.join(output_dir, file))
+                # Navigate to spotifycover.art
+                driver.get('https://www.spotifycover.art')
                 
-                finally:
-                    # Clean up
-                    driver.quit()
-                    shutil.rmtree(temp_dir)
+                # Wait for the input box to be present
+                input_box = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, 'textarea#linkInput'))
+                )
                 
+                # Clear the input box and enter the Spotify link
+                input_box.send_keys(spotify_link)
+                input_box.send_keys(Keys.RETURN)
+                
+                # Wait for the download button to be present and click it
+                download_button = WebDriverWait(driver, 10).until(
+                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button#downloadAllBtn"))
+                )
+                download_button.click()
+                
+                # Wait for the download to complete (you might need to adjust this based on the website's behavior)
+                time.sleep(10)
+                
+                # Extract zip file and move jpg files to output directory
+                for file in os.listdir(temp_dir):
+                    if file.endswith('.zip'):
+                        zip_path = os.path.join(temp_dir, file)
+                        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+                            zip_ref.extractall(temp_dir)
+                        os.remove(zip_path)
+                
+                # Move extracted jpg files to output directory        
+                for file in os.listdir(temp_dir):
+                    if file.endswith('.jpg'):
+                        shutil.move(os.path.join(temp_dir, file), os.path.join(output_dir, file))
+            
             except Exception as e:
                 messagebox.showerror('Error', f'Failed to download Spotify album art: {str(e)}')
                 return
