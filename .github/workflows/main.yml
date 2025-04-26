@@ -29,12 +29,26 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pyinstaller
+
+    - name: Download and setup ffmpeg
+      run: |
+        mkdir -p ffmpeg
+        curl -L https://evermeet.cx/ffmpeg/ffmpeg-7.1.1.7z -o ffmpeg.7z
+        tar -xvf ffmpeg.7z -C ffmpeg
+        mv ffmpeg/ffmpeg-7.1.1/ffmpeg ffmpeg/
+        rm -rf ffmpeg/ffmpeg-7.1.1 ffmpeg.7z
+
+    - name: Download and setup yt-dlp
+      run: |
+        mkdir -p yt-dlp
+        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp/yt-dlp
+        chmod +x yt-dlp/yt-dlp
         
     - name: Build with PyInstaller
       run: |
         pyinstaller --windowed --name "Spotify2MP3" \
-          --add-data "ffmpeg:ffmpeg" \
-          --add-data "yt-dlp:yt-dlp" \
+          --add-data "ffmpeg/ffmpeg:ffmpeg" \
+          --add-data "yt-dlp/yt-dlp:yt-dlp" \
           --add-data "config.json:." \
           spotify2media.py
         
