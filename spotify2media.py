@@ -78,7 +78,13 @@ class Spotify2MP3GUI:
         self.csv_path = None
         self.output_folder = None
         self.last_output_dir = None
-        self.last_directory = os.path.expanduser("~")  # Start with home directory
+        
+        # Set initial directory to Downloads folder
+        if platform.system() == "Windows":
+            self.last_directory = os.path.join(os.path.expanduser("~"), "Downloads")
+        else:
+            self.last_directory = os.path.expanduser("~/Downloads")
+            
         self.config = load_config()
 
         self.setup_ui()
@@ -149,7 +155,7 @@ class Spotify2MP3GUI:
 
         # Spotify album art option
         self.spotify_art_var = tk.BooleanVar(value=False)
-        self.spotify_art_check = tk.Checkbutton(self.root, text='Get album art from Spotify', variable=self.spotify_art_var)
+        self.spotify_art_check = tk.Checkbutton(self.root, text='Get album art from Spotify (Requires Chrome)', variable=self.spotify_art_var)
         self.spotify_art_check.pack(pady=2)
         Tooltip(self.spotify_art_check, 'Download album art from Spotify using spotifycover.art')
         
@@ -241,6 +247,104 @@ class Spotify2MP3GUI:
             self.drop_label.config(text=f'CSV file: {os.path.basename(path)}')
             self.status_label.config(text='CSV loaded via drag.')
             self.update_convert_button_state()
+
+    def get_file_timestamps(self, file_path):
+        return {
+            'created': os.path.getctime(file_path),
+            'modified': os.path.getmtime(file_path)
+        }
+
+    def set_file_timestamps(self, file_path, timestamps):
+        os.utime(file_path, (timestamps['modified'], timestamps['modified']))
+        # Note: Creation time can't be directly set on Unix systems, but we preserve it where possible
+
+    def embed_artwork(self, audio_file, jpg_file):
+        print(f"\nEmbedding artwork for: {audio_file}")
+        print(f"Using artwork: {jpg_file}")
+        
+        # Save original timestamps
+        timestamps = self.get_file_timestamps(audio_file)
+        
+        temp_output = f"temp_{audio_file}"
+        cmd = [
+            'ffmpeg', '-i', audio_file,
+            '-i', jpg_file,
+            '-map', '0:a',
+            '-map', '1:v',
+            '-c:a', 'copy',
+            '-c:v', 'mjpeg',
+            '-disposition:v:0', 'attached_pic',
+            temp_output
+        ]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+            os.replace(temp_output, audio_file)
+            # Restore original timestamps
+            self.set_file_timestamps(audio_file, timestamps)
+            print(f"Successfully embedded artwork for {audio_file}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error processing {audio_file}: {e.stderr.decode()}")
+            if os.path.exists(temp_output):
+                os.remove(temp_output)
+
+    def get_modified_time(self, file_path):
+        return os.path.getmtime(file_path)
+
+    def clean_filename_for_artwork(self, filename):
+        # Remove file extension
+        filename = os.path.splitext(filename)[0]
+        return filename
+
+    def get_jpg_number(self, filename):
+        # Extract the number prefix from jpg files (e.g., "1_" or "42_")
+        match = re.match(r'^(\d+)_', filename)
+        return int(match.group(1)) if match else float('inf')
+
+    def rename_album_art(self, output_dir):
+        # Get all audio files (MP3 and M4A) and JPG files
+        audio_files = [f for f in os.listdir(output_dir) if f.lower().endswith(('.mp3', '.m4a'))]
+        jpg_files = [f for f in os.listdir(output_dir) if f.endswith('.jpg')]
+        
+        # Sort audio files by modification time
+        audio_files.sort(key=lambda x: self.get_modified_time(os.path.join(output_dir, x)))
+        
+        # Sort JPG files by their number prefix
+        jpg_files.sort(key=self.get_jpg_number)
+        
+        # Make sure we have the same number of files
+        if len(audio_files) != len(jpg_files):
+            print(f"Warning: Number of files doesn't match! Audio files: {len(audio_files)}, JPG: {len(jpg_files)}")
+            print("Will process as many files as possible.")
+        
+        # Process files in pairs
+        for i, (audio_file, jpg_file) in enumerate(zip(audio_files, jpg_files)):
+            print(f"\nProcessing pair {i + 1}:")
+            print(f"Audio file: {audio_file}")
+            print(f"Current JPG: {jpg_file}")
+            
+            # Generate new jpg filename based on audio filename
+            new_jpg_name = self.clean_filename_for_artwork(audio_file) + '.jpg'
+            print(f"New JPG name: {new_jpg_name}")
+            
+            try:
+                os.rename(
+                    os.path.join(output_dir, jpg_file),
+                    os.path.join(output_dir, new_jpg_name)
+                )
+                print(f"Successfully renamed {jpg_file} to {new_jpg_name}")
+            except Exception as e:
+                print(f"Error renaming file: {e}")
+
+    def embed_all_artwork(self, output_dir):
+        # Get all audio files (both M4A and MP3)
+        audio_files = [f for f in os.listdir(output_dir) if f.lower().endswith(('.m4a', '.mp3'))]
+        for audio_file in audio_files:
+            jpg_file = os.path.splitext(audio_file)[0] + '.jpg'
+            jpg_path = os.path.join(output_dir, jpg_file)
+            if os.path.exists(jpg_path):
+                self.embed_artwork(os.path.join(output_dir, audio_file), jpg_path)
+            else:
+                print(f"No matching artwork found for {audio_file} (expected {jpg_file})")
 
     def convert_playlist(self):
         start_time = time.time()
@@ -441,6 +545,14 @@ class Spotify2MP3GUI:
                 for fn in downloaded:
                     raw = os.path.join(output_dir, fn)
                     m3u.write(str(PureWindowsPath(raw)) + '\r\n')
+
+        # Handle album art if Spotify album art was enabled
+        if self.spotify_art_var.get():
+            self.status_label.config(text='Renaming album art files...')
+            self.rename_album_art(output_dir)
+            
+            self.status_label.config(text='Embedding album art...')
+            self.embed_all_artwork(output_dir)
 
         self.progress['value'] = self.progress['maximum']
         self.root.config(cursor='')
