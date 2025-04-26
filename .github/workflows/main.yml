@@ -56,7 +56,7 @@ jobs:
     - name: Zip the app
       run: |
           cd dist
-          zip -r Spotify2MP3.zip Spotify2MP3.app
+          ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3.zip
         
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
