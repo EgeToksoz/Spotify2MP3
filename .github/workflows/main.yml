@@ -1,11 +1,16 @@
 name: Build Spotify2MP3
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to create'
+        default: '1.1.1'
+        required: true
+        type: string
+
+env:
+  LEVEL: ${{ inputs.version }}
 
 jobs:
   build:
@@ -33,8 +38,11 @@ jobs:
         upload_exe_with_name: 'Spotify2MP3'
         options: '--windowed, --name "Spotify2MP3", --add-data "ffmpeg:ffmpeg", --add-data "yt-dlp:yt-dlp", --add-data "config.json:."'
         
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
+    - name: Create GitHub Draft
+      uses: softprops/action-gh-release@v1
       with:
-        name: Spotify2MP3
-        path: dist/Spotify2MP3.app 
+        tag_name: v${{ env.LEVEL }}
+        name: Spotify2MP3 v${{ env.LEVEL }}
+        draft: true
+        prerelease: false
+        files: dist/Spotify2MP3.app
