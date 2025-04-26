@@ -1,0 +1,29 @@
+name: Build Spotify2MP3
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+        
+    - name: Create Executable
+      uses: sayyid5416/pyinstaller@v1
+      with:
+        spec: 'spotify2media.py'
+        requirements: 'requirements.txt'
+        upload_exe_with_name: 'Spotify2MP3'
+        options: '--windowed, --name "Spotify2MP3", --add-data "ffmpeg:ffmpeg", --add-data "yt-dlp:yt-dlp", --add-data "config.json:."'
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: Spotify2MP3
+        path: dist/Spotify2MP3.app 
