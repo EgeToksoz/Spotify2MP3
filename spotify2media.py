@@ -267,6 +267,7 @@ class Spotify2MP3GUI:
                 
                 # Setup Chrome options
                 chrome_options = webdriver.ChromeOptions()
+                chrome_options.add_argument('--headless')
                 chrome_options.add_argument('--no-sandbox')
                 chrome_options.add_argument('--disable-dev-shm-usage')
                 
@@ -311,20 +312,30 @@ class Spotify2MP3GUI:
                 
                 # Wait for the download to complete (you might need to adjust this based on the website's behavior)
                 time.sleep(10)
+                driver.quit()
                 
-                # Extract zip file and move jpg files to output directory
-                for file in os.listdir(temp_dir):
+                # Find and move zip file from downloads to output directory
+                if platform.system() == "Windows":
+                    downloads_dir = os.path.join(os.path.expanduser("~"), "Downloads")
+                else:
+                    downloads_dir = os.path.expanduser("~/Downloads")
+                    
+                for file in os.listdir(downloads_dir):
                     if file.endswith('.zip'):
-                        zip_path = os.path.join(temp_dir, file)
-                        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                            zip_ref.extractall(temp_dir)
-                        os.remove(zip_path)
+                        zip_path = os.path.join(downloads_dir, file)
+                        new_zip_path = os.path.join(output_dir, file)
+                        shutil.move(zip_path, new_zip_path)
+                        
+                        # Extract zip file
+                        with zipfile.ZipFile(new_zip_path, 'r') as zip_ref:
+                            zip_ref.extractall(output_dir)
+                        os.remove(new_zip_path)
                 
                 # Move extracted jpg files to output directory        
-                for file in os.listdir(temp_dir):
+                for file in os.listdir(output_dir):
                     if file.endswith('.jpg'):
-                        shutil.move(os.path.join(temp_dir, file), os.path.join(output_dir, file))
-            
+                        # Files are already in output_dir, no need to move
+                        pass
             except Exception as e:
                 messagebox.showerror('Error', f'Failed to download Spotify album art: {str(e)}')
                 return
