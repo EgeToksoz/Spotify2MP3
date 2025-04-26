@@ -80,6 +80,21 @@ class Spotify2MP3GUI:
         self.config = load_config()
 
         self.setup_ui()
+        if sys.platform == 'darwin':
+            icon_path = resource_path('icon.icns')  # macOS icon
+        else:
+            icon_path = resource_path('icon.ico')   # Windows icon
+        try:
+            if sys.platform == 'darwin':
+                # macOS specific icon handling
+                img = tk.Image("photo", file=icon_path)
+                self.root.iconphoto(True, img)
+            else:
+                self.root.iconbitmap(icon_path)     # Windows-friendly .ico
+        except Exception:
+            # fallback for other platforms / PNG icons
+            img = tk.PhotoImage(file=icon_path)
+            self.root.iconphoto(False, img)
         if _tkdnd_imported:
             try:
                 root.drop_target_register(DND_FILES)
@@ -314,6 +329,8 @@ class Spotify2MP3GUI:
         self.clear_button.config(state=tk.NORMAL)
         self.status_label.config(text=f"✅ Completed in {timedelta(seconds=int(time.time() - start_time))}")
         self.root.bell()
+
+
 
 if __name__ == '__main__':
     if _tkdnd_imported:
