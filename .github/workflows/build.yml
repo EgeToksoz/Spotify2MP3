@@ -105,7 +105,6 @@ jobs:
           --add-data "yt-dlp/yt-dlp:yt-dlp" \
           --add-data "config.json:." \
           --add-data "icon.icns:." \
-          --add-data "icon.ico:." \
           --icon=icon.icns \
           spotify2media.py
 
