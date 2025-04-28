@@ -58,11 +58,13 @@ jobs:
           --add-data "icon.png:." \
           --icon=icon.png \
           spotify2media.py
+        ls dist
 
     - name: Zip the app
       run: |
         cd dist
-        ditto -c -k --keepParent Spotify2MP3 Spotify2MP3_Linux_x64.zip
+        mv Spotify2MP3 Spotify2MP3_Linux_x64.run
+        zip -r Spotify2MP3_Linux_x64.zip Spotify2MP3_Linux_x64.run
         
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
