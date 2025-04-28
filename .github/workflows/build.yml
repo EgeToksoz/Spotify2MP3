@@ -122,67 +122,6 @@ jobs:
         prerelease: false
         files: dist/Spotify2MP3_macOS.zip
 
-  build-linux-arm64:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.13'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pyinstaller
-
-    - name: Download and setup ffmpeg
-      run: |
-        mkdir -p ffmpeg
-        cd ffmpeg
-        curl -L https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-arm64-static.tar.xz -o ffmpeg.tar.xz
-        tar -xvf ffmpeg.tar.xz
-        cd ffmpeg-*-arm64-static
-        mv ffmpeg ../
-        cd ..
-        rm -rf ffmpeg-*-arm64-static
-        rm -rf ffmpeg.tar.xz
-
-    - name: Download and setup yt-dlp
-      run: |
-        mkdir -p yt-dlp
-        cd yt-dlp
-        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_linux_aarch64 -o yt-dlp
-        chmod +x yt-dlp
-        
-    - name: Build with PyInstaller
-      run: |
-        pyinstaller --onefile --windowed --name "Spotify2MP3" \
-          --add-data "ffmpeg/ffmpeg:ffmpeg" \
-          --add-data "yt-dlp/yt-dlp:yt-dlp" \
-          --add-data "config.json:." \
-          --add-data "icon.png:." \
-          --icon=icon.png \
-          spotify2media.py
-
-    - name: Zip the app
-      run: |
-        cd dist
-        mv Spotify2MP3 Spotify2MP3_Linux_arm64
-        zip -r Spotify2MP3_Linux_arm64.zip Spotify2MP3_Linux_arm64
-        
-    - name: Create GitHub Draft
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v${{ env.LEVEL }}
-        name: Spotify2MP3 v${{ env.LEVEL }}
-        draft: true
-        prerelease: false
-        files: dist/Spotify2MP3_Linux_arm64.zip
-
   build-linux-x64:
     runs-on: ubuntu-latest
     
@@ -232,6 +171,7 @@ jobs:
     - name: Zip the app
       run: |
         cd dist
+        chmod +x Spotify2MP3
         mv Spotify2MP3 Spotify2MP3_Linux_x64
         zip -r Spotify2MP3_Linux_x64.zip Spotify2MP3_Linux_x64
         
