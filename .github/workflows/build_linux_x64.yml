@@ -1,4 +1,4 @@
-name: Build Spotify2MP3
+name: Build Spotify2MP3 Linux x64
 
 on:
   workflow_dispatch:
@@ -51,7 +51,7 @@ jobs:
         
     - name: Build with PyInstaller
       run: |
-        pyinstaller --windowed --name "Spotify2MP3" \
+        pyinstaller --onefile --windowed --name "Spotify2MP3" \
           --add-data "ffmpeg/ffmpeg:ffmpeg" \
           --add-data "yt-dlp/yt-dlp:yt-dlp" \
           --add-data "config.json:." \
