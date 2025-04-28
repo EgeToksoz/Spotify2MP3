@@ -3,3 +3,5 @@ ffmpeg/ffplay.exe
 ffmpeg/ffprobe.exe
 yt-dlp.exe
 .DS_Store
+yt-dlp/yt-dlp
+ffmpeg/ffmpeg
