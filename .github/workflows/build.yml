@@ -135,7 +135,6 @@ jobs:
         
     - name: Install dependencies
       run: |
-        sudo apt-get install python3.13-tk
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pyinstaller
@@ -161,7 +160,7 @@ jobs:
         
     - name: Build with PyInstaller
       run: |
-        pyinstaller --windowed --name "Spotify2MP3" \
+        pyinstaller --onefile --windowed --name "Spotify2MP3" \
           --add-data "ffmpeg/ffmpeg:ffmpeg" \
           --add-data "yt-dlp/yt-dlp:yt-dlp" \
           --add-data "config.json:." \
@@ -172,7 +171,8 @@ jobs:
     - name: Zip the app
       run: |
         cd dist
-        ditto -c -k --keepParent Spotify2MP3 Spotify2MP3_Linux_arm64.zip
+        mv Spotify2MP3 Spotify2MP3_Linux_arm64
+        zip -r Spotify2MP3_Linux_arm64.zip Spotify2MP3_Linux_arm64
         
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
@@ -196,7 +196,6 @@ jobs:
         
     - name: Install dependencies
       run: |
-        sudo apt-get install python3.13-tk
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pyinstaller
@@ -222,7 +221,7 @@ jobs:
         
     - name: Build with PyInstaller
       run: |
-        pyinstaller --windowed --name "Spotify2MP3" \
+        pyinstaller --onefile --windowed --name "Spotify2MP3" \
           --add-data "ffmpeg/ffmpeg:ffmpeg" \
           --add-data "yt-dlp/yt-dlp:yt-dlp" \
           --add-data "config.json:." \
@@ -233,7 +232,8 @@ jobs:
     - name: Zip the app
       run: |
         cd dist
-        ditto -c -k --keepParent Spotify2MP3 Spotify2MP3_Linux_x64.zip
+        mv Spotify2MP3 Spotify2MP3_Linux_x64
+        zip -r Spotify2MP3_Linux_x64.zip Spotify2MP3_Linux_x64
         
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
