@@ -101,7 +101,7 @@ jobs:
         cd dist
         ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS_ARM.zip
         cd ..
-        arch -x86_64 python -m PyInstaller Spotify2MP3-macOS.spec --clean -y
+        arch -x86_64 python -m PyInstaller Spotify2MP3-macOS.spec -y
         cd dist
         ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Intel.zip
 
