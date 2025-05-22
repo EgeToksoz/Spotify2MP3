@@ -45,7 +45,6 @@ jobs:
         mkdir -p yt-dlp
         cd yt-dlp
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
-        chmod +x yt-dlp
         
     - name: Build with PyInstaller and create zip file
       run: |
