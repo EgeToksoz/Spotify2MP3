@@ -46,10 +46,18 @@ jobs:
         cd yt-dlp
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
         chmod +x yt-dlp
+        # Verify the file is executable
+        ls -l yt-dlp
+        # Test the file to ensure it works
+        ./yt-dlp --version
         
     - name: Build with PyInstaller and create zip file
       run: |
+        # Ensure yt-dlp is still executable before building
+        chmod +x yt-dlp/yt-dlp
         arch -x86_64 python -m PyInstaller Spotify2MP3-macOS.spec -y
+        # Verify yt-dlp in the final bundle
+        chmod +x dist/Spotify2MP3.app/Contents/MacOS/yt-dlp
         cd dist
         ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Intel.zip
 
