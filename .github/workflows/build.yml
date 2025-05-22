@@ -8,7 +8,7 @@ on:
     inputs:
       version:
         description: 'Version to create'
-        default: '1.3.2'
+        default: '1.3.3'
         required: true
         type: string
 
@@ -77,6 +77,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt pyinstaller 
+        arch -x86_64 python -m pip install --upgrade pip
+        arch -x86_64 pip install -r requirements.txt pyinstaller
 
     - name: Download and setup ffmpeg
       run: |
@@ -97,7 +99,11 @@ jobs:
       run: |
         pyinstaller Spotify2MP3-macOS.spec
         cd dist
-        ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS.zip
+        ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS_ARM.zip
+        cd ..
+        arch -x86_64 python -m PyInstaller Spotify2MP3-macOS.spec --clean -y
+        cd dist
+        ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Intel.zip
 
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
@@ -106,7 +112,9 @@ jobs:
         name: Spotify2MP3 v${{ env.LEVEL }}
         draft: true
         prerelease: false
-        files: dist/Spotify2MP3_macOS.zip
+        files: |
+          dist/Spotify2MP3_macOS_ARM.zip
+          dist/Spotify2MP3_macOS_Intel.zip
 
   build-linux-x64:
     runs-on: ubuntu-22.04
