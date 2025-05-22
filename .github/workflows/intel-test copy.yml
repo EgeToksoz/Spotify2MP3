@@ -1,0 +1,67 @@
+name: Build Spotify2MP3 for intel macs
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to create'
+        default: '1.3.3'
+        required: true
+        type: string
+
+env:
+  LEVEL: ${{ inputs.version }}
+
+jobs: 
+  build-macos:
+    runs-on: self-hosted
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        arch -x86_64 python3 -m pip install --upgrade pip
+        arch -x86_64 pip3 install -r requirements.txt pyinstaller
+
+    - name: Download and setup ffmpeg
+      run: |
+        mkdir -p ffmpeg
+        cd ffmpeg
+        curl -L https://evermeet.cx/ffmpeg/ffmpeg-7.1.1.7z -o ffmpeg.7z
+        tar -xvf ffmpeg.7z
+        rm -rf ffmpeg.7z
+
+    - name: Download and setup yt-dlp
+      run: |
+        mkdir -p yt-dlp
+        cd yt-dlp
+        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
+        chmod +x yt-dlp
+        # Verify the file is executable
+        ls -l yt-dlp
+        # Test the file to ensure it works
+        ./yt-dlp --version
+        
+    - name: Build with PyInstaller and create zip file
+      run: |
+        # Ensure yt-dlp is still executable before building
+        chmod +x yt-dlp/yt-dlp
+        arch -x86_64 python3 -m PyInstaller Spotify2MP3-macOS.spec --clean -y 
+        # Verify yt-dlp in the final bundle
+        chmod +x dist/Spotify2MP3.app/Contents/Frameworks/yt-dlp/yt-dlp
+        cd dist
+        ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Intel.zip
+
+    - name: Create GitHub Draft
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ env.LEVEL }}
+        name: Spotify2MP3 v${{ env.LEVEL }}
+        draft: true
+        prerelease: false
+        files: |
+          dist/Spotify2MP3_macOS_Intel.zip
