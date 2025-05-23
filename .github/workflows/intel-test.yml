@@ -39,12 +39,12 @@ jobs:
       run: |
         mkdir -p yt-dlp
         cd yt-dlp
-        arch -x86_64 curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
+        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
         chmod +x yt-dlp
         
     - name: Build with PyInstaller and create zip file
       run: |
-        arch -x86_64 python3 -m PyInstaller Spotify2MP3-macOS.spec -y --clean
+        arch -x86_64 python3 -m PyInstaller Spotify2MP3-Intel-macOS.spec -y --clean --log-level DEBUG
         cd dist
         ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Intel.zip
 
