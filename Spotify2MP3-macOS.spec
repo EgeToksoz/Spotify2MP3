@@ -4,8 +4,8 @@
 a = Analysis(
     ['spotify2media.py'],
     pathex=[],
-    binaries=[],
-    datas=[('ffmpeg/ffmpeg', 'ffmpeg'), ('yt-dlp/yt-dlp', 'yt-dlp'), ('config.json', '.'), ('icon.icns', '.')],
+    binaries=[('ffmpeg/ffmpeg', 'ffmpeg'), ('yt-dlp/yt-dlp', 'yt-dlp')],
+    datas=[('config.json', '.'), ('icon.icns', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
