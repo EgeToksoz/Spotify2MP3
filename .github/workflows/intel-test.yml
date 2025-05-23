@@ -41,6 +41,8 @@ jobs:
         cd yt-dlp
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
         chmod +x yt-dlp
+        lipo yt-dlp -thin x86_64 -output yt-dlp_x86_64
+        mv yt-dlp_x86_64 yt-dlp
         
     - name: Build with PyInstaller and create zip file
       run: |
