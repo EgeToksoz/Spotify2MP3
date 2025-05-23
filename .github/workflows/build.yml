@@ -76,9 +76,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt pyinstaller 
-        arch -x86_64 python -m pip install --upgrade pip
-        arch -x86_64 pip install -r requirements.txt pyinstaller
+        pip install -r requirements.txt
 
     - name: Download and setup ffmpeg
       run: |
@@ -100,10 +98,6 @@ jobs:
         pyinstaller Spotify2MP3-macOS.spec
         cd dist
         ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS_ARM.zip
-        cd ..
-        arch -x86_64 python -m PyInstaller Spotify2MP3-macOS.spec -y
-        cd dist
-        ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Intel.zip
 
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
