@@ -25,11 +25,11 @@ jobs:
     - name: Install dependencies
       run: |
         # Install system dependencies
-        brew install python-tk@3.13
-        brew install tcl-tk
+        brew install python@3.11
+        brew install python-tk@3.11
         
-        # Create and activate virtual environment
-        python3 -m venv venv
+        # Create and activate virtual environment with Python 3.11
+        /opt/homebrew/opt/python@3.11/bin/python3.11 -m venv venv
         source venv/bin/activate
         
         # Install Python dependencies with Universal2 support
@@ -63,10 +63,13 @@ jobs:
         # Set architecture flags for PyInstaller
         export ARCHFLAGS="-arch arm64 -arch x86_64"
         # Ensure Tkinter is properly linked
-        export TCL_LIBRARY="/usr/local/opt/tcl-tk/lib"
-        export TK_LIBRARY="/usr/local/opt/tcl-tk/lib"
+        export TCL_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
+        export TK_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
         # Set Python to build universal2 binaries
         export PYTHON_CONFIGURE_OPTS="--enable-framework --with-universal-archs=intel-64"
+        # Install PyInstaller in the virtual environment
+        python -m pip install pyinstaller
+        # Build the app
         python -m PyInstaller Spotify2MP3-Universal2-macOS.spec -y --clean --log-level DEBUG
         cd dist
         ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Universal2.zip
