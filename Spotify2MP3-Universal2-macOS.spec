@@ -3,14 +3,14 @@
 
 a = Analysis(
     ['spotify2media.py'],
-    pathex=[],
-    binaries=[('ffmpeg/ffmpeg', 'ffmpeg'), ('yt-dlp/yt-dlp', 'yt-dlp')],
+    pathex=['.'],
+    binaries=[('yt-dlp/yt-dlp', 'yt-dlp'), ('ffmpeg/ffmpeg', 'ffmpeg')],
     datas=[('config.json', '.'), ('icon.icns', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['yt-dlp'],
     noarchive=False,
     optimize=0,
 )
@@ -25,11 +25,11 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch='x86_64',
+    target_arch='universal2',
     codesign_identity=None,
     entitlements_file=None,
     icon=['icon.icns'],
@@ -39,8 +39,7 @@ coll = COLLECT(
     a.binaries,
     a.datas,
     strip=False,
-    upx=True,
-    upx_exclude=['yt-dlp'],
+    upx=False,
     name='Spotify2MP3',
 )
 app = BUNDLE(

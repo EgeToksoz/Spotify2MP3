@@ -24,8 +24,13 @@ jobs:
         
     - name: Install dependencies
       run: |
-        arch -x86_64 python3 -m pip install --upgrade pip
-        arch -x86_64 pip3 install -r requirements.txt
+        # Ensure we're using a Universal2 Python
+        python3 -m pip install --upgrade pip
+        # Force pip to install universal2 wheels when available
+        export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
+        export PIP_PREFER_BINARY=1
+        # Install requirements with universal2 support
+        ARCHFLAGS="-arch arm64 -arch x86_64" python3 -m pip install -r requirements.txt --no-cache-dir
 
     - name: Download and setup ffmpeg
       run: |
@@ -41,14 +46,14 @@ jobs:
         cd yt-dlp
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
         chmod +x yt-dlp
-        lipo yt-dlp -thin x86_64 -output yt-dlp_x86_64
-        mv yt-dlp_x86_64 yt-dlp
         
     - name: Build with PyInstaller and create zip file
       run: |
-        arch -x86_64 python3 -m PyInstaller Spotify2MP3-Intel-macOS.spec -y --clean --log-level DEBUG
+        # Set architecture flags for PyInstaller
+        export ARCHFLAGS="-arch arm64 -arch x86_64"
+        python3 -m PyInstaller Spotify2MP3-Universal2-macOS.spec -y --clean --log-level DEBUG
         cd dist
-        ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Intel.zip
+        ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Universal2.zip
 
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
@@ -58,4 +63,4 @@ jobs:
         draft: true
         prerelease: false
         files: |
-          dist/Spotify2MP3_macOS_Intel.zip
+          dist/Spotify2MP3_macOS_Universal2.zip
