@@ -1,4 +1,4 @@
-name: Build Spotify2MP3 for intel macs
+name: Build Spotify2MP3 for Universal2 macs
 
 permissions:
   contents: write
@@ -17,19 +17,23 @@ env:
 
 jobs: 
   build-macos:
-    runs-on: self-hosted
+    runs-on: macos-latest
     
     steps:
     - uses: actions/checkout@v4
         
     - name: Install dependencies
       run: |
-        # Ensure we're using a Universal2 Python
+        # Install system dependencies
+        brew install python-tk@3.13
+        brew install tcl-tk
+        
+        # Install Python dependencies with Universal2 support
         python3 -m pip install --upgrade pip
         # Force pip to install universal2 wheels when available
         export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
         export PIP_PREFER_BINARY=1
-        # Install requirements with universal2 support
+        # Install all requirements with universal2 support
         ARCHFLAGS="-arch arm64 -arch x86_64" python3 -m pip install -r requirements.txt --no-cache-dir
 
     - name: Download and setup ffmpeg
@@ -51,6 +55,11 @@ jobs:
       run: |
         # Set architecture flags for PyInstaller
         export ARCHFLAGS="-arch arm64 -arch x86_64"
+        # Ensure Tkinter is properly linked
+        export TCL_LIBRARY="/usr/local/opt/tcl-tk/lib"
+        export TK_LIBRARY="/usr/local/opt/tcl-tk/lib"
+        # Set Python to build universal2 binaries
+        export PYTHON_CONFIGURE_OPTS="--enable-framework --with-universal-archs=intel-64"
         python3 -m PyInstaller Spotify2MP3-Universal2-macOS.spec -y --clean --log-level DEBUG
         cd dist
         ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Universal2.zip
