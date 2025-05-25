@@ -25,7 +25,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: '3.13'
 
     - name: Download and setup ffmpeg
       run: |
@@ -41,7 +41,7 @@ jobs:
         cd yt-dlp
         curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
         chmod +x yt-dlp
-        
+
     - name: Install dependencies
       run: |
           brew install pyenv
