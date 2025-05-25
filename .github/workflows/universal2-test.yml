@@ -17,7 +17,7 @@ env:
 
 jobs: 
   build-macos:
-    runs-on: macos-latest
+    runs-on: self-hosted
     
     steps:
     - uses: actions/checkout@v4
@@ -26,6 +26,22 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+
+    - name: Download and setup ffmpeg
+      run: |
+        mkdir -p ffmpeg
+        cd ffmpeg
+        curl -L https://evermeet.cx/ffmpeg/ffmpeg-7.1.1.7z -o ffmpeg.7z
+        tar -xvf ffmpeg.7z
+        rm -rf ffmpeg.7z
+
+    - name: Download and setup yt-dlp
+      run: |
+        mkdir -p yt-dlp
+        cd yt-dlp
+        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
+        chmod +x yt-dlp
+        
     - name: Install dependencies
       run: |
           brew install pyenv
