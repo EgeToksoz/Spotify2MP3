@@ -31,6 +31,13 @@ jobs:
         # Install Python build dependencies
         brew install pkg-config openssl@3 tcl-tk
         
+        # Set up paths for both Intel and Apple Silicon
+        if [ -d "/usr/local/opt/tcl-tk" ]; then
+          TCL_PATH="/usr/local/opt/tcl-tk"
+        else
+          TCL_PATH="/opt/homebrew/opt/tcl-tk"
+        fi
+        
         # Download and build Python from source with Universal2 support
         curl -O https://www.python.org/ftp/python/3.11.7/Python-3.11.7.tgz
         tar xzf Python-3.11.7.tgz
@@ -38,11 +45,17 @@ jobs:
         
         # Configure Python build for Universal2
         export MACOSX_DEPLOYMENT_TARGET=11.0
-        export PYTHON_CONFIGURE_OPTS="--enable-framework --enable-optimizations --with-tcltk-includes='-I/opt/homebrew/opt/tcl-tk/include' --with-tcltk-libs='-L/opt/homebrew/opt/tcl-tk/lib -ltcl8.6 -ltk8.6' --enable-universalsdk --with-universal-archs=universal2"
-        export CFLAGS="-arch arm64 -arch x86_64 -I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/opt/tcl-tk/include"
-        export LDFLAGS="-arch arm64 -arch x86_64 -L/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/tcl-tk/lib"
+        export PYTHON_CONFIGURE_OPTS="--enable-framework --enable-optimizations --with-tcltk-includes='-I$TCL_PATH/include' --with-tcltk-libs='-L$TCL_PATH/lib -ltcl8.6 -ltk8.6' --enable-universalsdk --with-universal-archs=universal2"
+        export CFLAGS="-arch arm64 -arch x86_64 -I/usr/local/opt/openssl@3/include -I/opt/homebrew/opt/openssl@3/include -I$TCL_PATH/include"
+        export LDFLAGS="-arch arm64 -arch x86_64 -L/usr/local/opt/openssl@3/lib -L/opt/homebrew/opt/openssl@3/lib -L$TCL_PATH/lib"
         
-        ./configure --enable-framework --enable-optimizations --with-tcltk-includes="-I/opt/homebrew/opt/tcl-tk/include" --with-tcltk-libs="-L/opt/homebrew/opt/tcl-tk/lib -ltcl8.6 -ltk8.6" --enable-universalsdk --with-universal-archs=universal2
+        ./configure --enable-framework \
+          --enable-optimizations \
+          --with-tcltk-includes="-I$TCL_PATH/include" \
+          --with-tcltk-libs="-L$TCL_PATH/lib -ltcl8.6 -ltk8.6" \
+          --enable-universalsdk \
+          --with-universal-archs=universal2
+        
         make -j$(sysctl -n hw.ncpu)
         sudo make install
         
@@ -56,8 +69,15 @@ jobs:
         export SYSTEM_VERSION_COMPAT=0
         export _PYTHON_HOST_PLATFORM="macosx-11.0-universal2"
         export PYTHON_CROSSENV=1
-        export CFLAGS="-arch arm64 -arch x86_64"
-        export LDFLAGS="-arch arm64 -arch x86_64"
+        
+        # Set tcl-tk paths based on architecture
+        if [ -d "/usr/local/opt/tcl-tk" ]; then
+          export TCL_LIBRARY="/usr/local/opt/tcl-tk/lib"
+          export TK_LIBRARY="/usr/local/opt/tcl-tk/lib"
+        else
+          export TCL_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
+          export TK_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
+        fi
         
         # Install Python dependencies with Universal2 support
         python -m pip install --upgrade pip
@@ -90,9 +110,14 @@ jobs:
         export SYSTEM_VERSION_COMPAT=0
         export PYTHON_CROSSENV=1
         
-        # Ensure Tkinter is properly linked
-        export TCL_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
-        export TK_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
+        # Set tcl-tk paths based on architecture
+        if [ -d "/usr/local/opt/tcl-tk" ]; then
+          export TCL_LIBRARY="/usr/local/opt/tcl-tk/lib"
+          export TK_LIBRARY="/usr/local/opt/tcl-tk/lib"
+        else
+          export TCL_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
+          export TK_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
+        fi
         
         # Install PyInstaller in the virtual environment
         python -m pip install --upgrade pyinstaller
