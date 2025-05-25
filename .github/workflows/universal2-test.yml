@@ -14,6 +14,7 @@ on:
 
 env:
   LEVEL: ${{ inputs.version }}
+  MACOSX_DEPLOYMENT_TARGET: "11.0"  # Ensures compatibility with macOS 11.0 and later
 
 jobs: 
   build-macos:
@@ -32,13 +33,20 @@ jobs:
         /opt/homebrew/opt/python@3.11/bin/python3.11 -m venv venv
         source venv/bin/activate
         
+        # Set environment variables for Universal2 build
+        export ARCHFLAGS="-arch arm64 -arch x86_64"
+        export MACOSX_DEPLOYMENT_TARGET=11.0
+        export SYSTEM_VERSION_COMPAT=0
+        export _PYTHON_HOST_PLATFORM="macosx-11.0-universal2"
+        export PYTHON_CROSSENV=1
+        
         # Install Python dependencies with Universal2 support
         python -m pip install --upgrade pip
         # Force pip to install universal2 wheels when available
         export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
         export PIP_PREFER_BINARY=1
         # Install all requirements with universal2 support
-        ARCHFLAGS="-arch arm64 -arch x86_64" python -m pip install -r requirements.txt --no-cache-dir
+        python -m pip install -r requirements.txt --no-cache-dir
 
     - name: Download and setup ffmpeg
       run: |
@@ -60,17 +68,24 @@ jobs:
         # Activate virtual environment
         source venv/bin/activate
         
-        # Set architecture flags for PyInstaller
+        # Set architecture flags and environment variables
         export ARCHFLAGS="-arch arm64 -arch x86_64"
+        export MACOSX_DEPLOYMENT_TARGET=11.0
+        export _PYTHON_HOST_PLATFORM="macosx-11.0-universal2"
+        export SYSTEM_VERSION_COMPAT=0
+        export PYTHON_CROSSENV=1
+        
         # Ensure Tkinter is properly linked
         export TCL_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
         export TK_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
-        # Set Python to build universal2 binaries
-        export PYTHON_CONFIGURE_OPTS="--enable-framework --with-universal-archs=intel-64"
+        
         # Install PyInstaller in the virtual environment
-        python -m pip install pyinstaller
+        python -m pip install --upgrade pyinstaller
+        
         # Build the app
         python -m PyInstaller Spotify2MP3-Universal2-macOS.spec -y --clean --log-level DEBUG
+        
+        # Create zip with ditto to preserve Mac attributes
         cd dist
         ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Universal2.zip
 
