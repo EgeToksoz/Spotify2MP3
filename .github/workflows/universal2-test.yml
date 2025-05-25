@@ -14,7 +14,6 @@ on:
 
 env:
   LEVEL: ${{ inputs.version }}
-  MACOSX_DEPLOYMENT_TARGET: "11.0"  # Ensures compatibility with macOS 11.0 and later
 
 jobs: 
   build-macos:
@@ -23,111 +22,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
         
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
     - name: Install dependencies
       run: |
-        # Remove existing Python installations to avoid conflicts
-        brew uninstall --ignore-dependencies python@3.11 python-tk@3.11 || true
-        
-        # Install Python build dependencies
-        brew install pkg-config openssl@3 tcl-tk
-        
-        # Set up paths for both Intel and Apple Silicon
-        if [ -d "/usr/local/opt/tcl-tk" ]; then
-          TCL_PATH="/usr/local/opt/tcl-tk"
-        else
-          TCL_PATH="/opt/homebrew/opt/tcl-tk"
-        fi
-        
-        # Download and build Python from source with Universal2 support
-        curl -O https://www.python.org/ftp/python/3.11.7/Python-3.11.7.tgz
-        tar xzf Python-3.11.7.tgz
-        cd Python-3.11.7
-        
-        # Configure Python build for Universal2
-        export MACOSX_DEPLOYMENT_TARGET=11.0
-        export PYTHON_CONFIGURE_OPTS="--enable-framework --enable-optimizations --with-tcltk-includes='-I$TCL_PATH/include' --with-tcltk-libs='-L$TCL_PATH/lib -ltcl8.6 -ltk8.6' --enable-universalsdk --with-universal-archs=universal2"
-        export CFLAGS="-arch arm64 -arch x86_64 -I/usr/local/opt/openssl@3/include -I/opt/homebrew/opt/openssl@3/include -I$TCL_PATH/include"
-        export LDFLAGS="-arch arm64 -arch x86_64 -L/usr/local/opt/openssl@3/lib -L/opt/homebrew/opt/openssl@3/lib -L$TCL_PATH/lib"
-        
-        ./configure --enable-framework \
-          --enable-optimizations \
-          --with-tcltk-includes="-I$TCL_PATH/include" \
-          --with-tcltk-libs="-L$TCL_PATH/lib -ltcl8.6 -ltk8.6" \
-          --enable-universalsdk \
-          --with-universal-archs=universal2
-        
-        make -j$(sysctl -n hw.ncpu)
-        sudo make install
-        
-        # Create and activate virtual environment with the Universal2 Python
-        python3.11 -m venv venv
-        source venv/bin/activate
-        
-        # Set environment variables for Universal2 build
-        export ARCHFLAGS="-arch arm64 -arch x86_64"
-        export MACOSX_DEPLOYMENT_TARGET=11.0
-        export SYSTEM_VERSION_COMPAT=0
-        export _PYTHON_HOST_PLATFORM="macosx-11.0-universal2"
-        export PYTHON_CROSSENV=1
-        
-        # Set tcl-tk paths based on architecture
-        if [ -d "/usr/local/opt/tcl-tk" ]; then
-          export TCL_LIBRARY="/usr/local/opt/tcl-tk/lib"
-          export TK_LIBRARY="/usr/local/opt/tcl-tk/lib"
-        else
-          export TCL_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
-          export TK_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
-        fi
-        
-        # Install Python dependencies with Universal2 support
-        python -m pip install --upgrade pip
-        python -m pip install -r requirements.txt --no-cache-dir
-
-    - name: Download and setup ffmpeg
-      run: |
-        mkdir -p ffmpeg
-        cd ffmpeg
-        curl -L https://evermeet.cx/ffmpeg/ffmpeg-7.1.1.7z -o ffmpeg.7z
-        tar -xvf ffmpeg.7z
-        rm -rf ffmpeg.7z
-
-    - name: Download and setup yt-dlp
-      run: |
-        mkdir -p yt-dlp
-        cd yt-dlp
-        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp_macos -o yt-dlp
-        chmod +x yt-dlp
-        
-    - name: Build with PyInstaller and create zip file
-      run: |
-        # Activate virtual environment
-        source venv/bin/activate
-        
-        # Set architecture flags and environment variables
-        export ARCHFLAGS="-arch arm64 -arch x86_64"
-        export MACOSX_DEPLOYMENT_TARGET=11.0
-        export _PYTHON_HOST_PLATFORM="macosx-11.0-universal2"
-        export SYSTEM_VERSION_COMPAT=0
-        export PYTHON_CROSSENV=1
-        
-        # Set tcl-tk paths based on architecture
-        if [ -d "/usr/local/opt/tcl-tk" ]; then
-          export TCL_LIBRARY="/usr/local/opt/tcl-tk/lib"
-          export TK_LIBRARY="/usr/local/opt/tcl-tk/lib"
-        else
-          export TCL_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
-          export TK_LIBRARY="/opt/homebrew/opt/tcl-tk/lib"
-        fi
-        
-        # Install PyInstaller in the virtual environment
-        python -m pip install --upgrade pyinstaller
-        
-        # Build the app
-        python -m PyInstaller Spotify2MP3-Universal2-macOS.spec -y --clean --log-level DEBUG
-        
-        # Create zip with ditto to preserve Mac attributes
-        cd dist
-        ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Universal2.zip
+          brew install pyenv
+          python3 -m pip install --upgrade pip setuptools wheel
+          export ARCHFLAGS="-arch x86_64 -arch arm64"
+          pip install --no-binary=:all: -r requirements.txt
+          pyinstaller Spotify2MP3-macOS.spec  --clean -y --log-level DEBUG
+          cd dist
+          ditto -c -k --keepParent "Spotify2MP3.app" Spotify2MP3_macOS_Universal2.zip
 
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
