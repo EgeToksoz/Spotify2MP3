@@ -25,12 +25,29 @@ jobs:
         
     - name: Install dependencies
       run: |
-        # Install system dependencies
-        brew install python@3.11
-        brew install python-tk@3.11
+        # Remove existing Python installations to avoid conflicts
+        brew uninstall --ignore-dependencies python@3.11 python-tk@3.11 || true
         
-        # Create and activate virtual environment with Python 3.11
-        /opt/homebrew/opt/python@3.11/bin/python3.11 -m venv venv
+        # Install Python build dependencies
+        brew install pkg-config openssl@3 tcl-tk
+        
+        # Download and build Python from source with Universal2 support
+        curl -O https://www.python.org/ftp/python/3.11.7/Python-3.11.7.tgz
+        tar xzf Python-3.11.7.tgz
+        cd Python-3.11.7
+        
+        # Configure Python build for Universal2
+        export MACOSX_DEPLOYMENT_TARGET=11.0
+        export PYTHON_CONFIGURE_OPTS="--enable-framework --enable-optimizations --with-tcltk-includes='-I/opt/homebrew/opt/tcl-tk/include' --with-tcltk-libs='-L/opt/homebrew/opt/tcl-tk/lib -ltcl8.6 -ltk8.6' --enable-universalsdk --with-universal-archs=universal2"
+        export CFLAGS="-arch arm64 -arch x86_64 -I/opt/homebrew/opt/openssl@3/include -I/opt/homebrew/opt/tcl-tk/include"
+        export LDFLAGS="-arch arm64 -arch x86_64 -L/opt/homebrew/opt/openssl@3/lib -L/opt/homebrew/opt/tcl-tk/lib"
+        
+        ./configure --enable-framework --enable-optimizations --with-tcltk-includes="-I/opt/homebrew/opt/tcl-tk/include" --with-tcltk-libs="-L/opt/homebrew/opt/tcl-tk/lib -ltcl8.6 -ltk8.6" --enable-universalsdk --with-universal-archs=universal2
+        make -j$(sysctl -n hw.ncpu)
+        sudo make install
+        
+        # Create and activate virtual environment with the Universal2 Python
+        python3.11 -m venv venv
         source venv/bin/activate
         
         # Set environment variables for Universal2 build
@@ -39,13 +56,11 @@ jobs:
         export SYSTEM_VERSION_COMPAT=0
         export _PYTHON_HOST_PLATFORM="macosx-11.0-universal2"
         export PYTHON_CROSSENV=1
+        export CFLAGS="-arch arm64 -arch x86_64"
+        export LDFLAGS="-arch arm64 -arch x86_64"
         
         # Install Python dependencies with Universal2 support
         python -m pip install --upgrade pip
-        # Force pip to install universal2 wheels when available
-        export PIP_EXTRA_INDEX_URL="https://pypi.org/simple"
-        export PIP_PREFER_BINARY=1
-        # Install all requirements with universal2 support
         python -m pip install -r requirements.txt --no-cache-dir
 
     - name: Download and setup ffmpeg
