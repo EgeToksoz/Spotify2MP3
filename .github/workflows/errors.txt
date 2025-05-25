@@ -1,0 +1,104 @@
+Running `/Users/runner/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name libc --edition=2021 /Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.168/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=z -C panic=abort -C codegen-units=1 --cfg 'feature="default"' --cfg 'feature="extra_traits"' --cfg 'feature="std"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("align", "const-extern-fn", "default", "extra_traits", "rustc-dep-of-std", "rustc-std-workspace-core", "std", "use_std"))' -C metadata=a944c51da5e1963f -C extra-filename=-0bfce5a3d889ae9e --out-dir /private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps --target x86_64-apple-darwin -C strip=symbols -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/release/deps --cap-lints allow --cfg freebsd11 --cfg libc_const_extern_fn --check-cfg 'cfg(emscripten_new_stat_abi)' --check-cfg 'cfg(espidf_time32)' --check-cfg 'cfg(freebsd10)' --check-cfg 'cfg(freebsd11)' --check-cfg 'cfg(freebsd12)' --check-cfg 'cfg(freebsd13)' --check-cfg 'cfg(freebsd14)' --check-cfg 'cfg(freebsd15)' --check-cfg 'cfg(libc_const_extern_fn)' --check-cfg 'cfg(libc_deny_warnings)' --check-cfg 'cfg(libc_thread_local)' --check-cfg 'cfg(libc_ctest)' --check-cfg 'cfg(target_os,values("switch","aix","ohos","hurd","rtems","visionos","nuttx"))' --check-cfg 'cfg(target_env,values("illumos","wasi","aix","ohos"))' --check-cfg 'cfg(target_arch,values("loongarch64","mips32r6","mips64r6","csky"))'`
+      error[E0463]: can't find crate for `core`
+        |
+        = note: the `x86_64-apple-darwin` target may not be installed
+        = help: consider downloading the target with `rustup target add x86_64-apple-darwin`
+      
+      For more information about this error, try `rustc --explain E0463`.
+      error: could not compile `cfg-if` (lib) due to 1 previous error
+      
+      Caused by:
+        process didn't exit successfully: `/Users/runner/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name cfg_if --edition=2018 /Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.0/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=z -C panic=abort -C codegen-units=1 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("compiler_builtins", "core", "rustc-dep-of-std"))' -C metadata=bd066052826d241b -C extra-filename=-7551ae251f5cf46b --out-dir /private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps --target x86_64-apple-darwin -C strip=symbols -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/release/deps --cap-lints allow` (exit status: 1)
+      warning: build failed, waiting for other jobs to finish...
+      error: could not compile `libc` (lib) due to 1 previous error
+      
+      Caused by:
+        process didn't exit successfully: `/Users/runner/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name libc --edition=2021 /Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.168/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=z -C panic=abort -C codegen-units=1 --cfg 'feature="default"' --cfg 'feature="extra_traits"' --cfg 'feature="std"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("align", "const-extern-fn", "default", "extra_traits", "rustc-dep-of-std", "rustc-std-workspace-core", "std", "use_std"))' -C metadata=a944c51da5e1963f -C extra-filename=-0bfce5a3d889ae9e --out-dir /private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps --target x86_64-apple-darwin -C strip=symbols -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/release/deps --cap-lints allow --cfg freebsd11 --cfg libc_const_extern_fn --check-cfg 'cfg(emscripten_new_stat_abi)' --check-cfg 'cfg(espidf_time32)' --check-cfg 'cfg(freebsd10)' --check-cfg 'cfg(freebsd11)' --check-cfg 'cfg(freebsd12)' --check-cfg 'cfg(freebsd13)' --check-cfg 'cfg(freebsd14)' --check-cfg 'cfg(freebsd15)' --check-cfg 'cfg(libc_const_extern_fn)' --check-cfg 'cfg(libc_deny_warnings)' --check-cfg 'cfg(libc_thread_local)' --check-cfg 'cfg(libc_ctest)' --check-cfg 'cfg(target_os,values("switch","aix","ohos","hurd","rtems","visionos","nuttx"))' --check-cfg 'cfg(target_env,values("illumos","wasi","aix","ohos"))' --check-cfg 'cfg(target_arch,values("loongarch64","mips32r6","mips64r6","csky"))'` (exit status: 1)
+      error: could not compile `memchr` (lib) due to 1 previous error
+      
+      Caused by:
+        process didn't exit successfully: `/Users/runner/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --crate-name memchr --edition=2021 /Users/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/memchr-2.7.4/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C opt-level=z -C panic=abort -C linker-plugin-lto -C codegen-units=1 --cfg 'feature="alloc"' --cfg 'feature="default"' --cfg 'feature="std"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("alloc", "compiler_builtins", "core", "default", "libc", "logging", "rustc-dep-of-std", "std", "use_std"))' -C metadata=e36ef8cc0edfb6c6 -C extra-filename=-a1144a27209f3b25 --out-dir /private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps --target x86_64-apple-darwin -C strip=symbols -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/x86_64-apple-darwin/release/deps -L dependency=/private/var/folders/w5/_8wgjw3j5cg6mgrth3s2kg9m0000gn/T/pip-install-zze3fiv0/selenium_d2a182bd0f4d4c928417267be6936390/target/release/deps --cap-lints allow` (exit status: 1)
+      error: `cargo build --manifest-path Cargo.toml --message-format=json-render-diagnostics --target x86_64-apple-darwin --release -v` failed with code 101
+      [end of output]
+  
+  note: This error originates from a subprocess, and is likely not a problem with pip.
+  ERROR: Failed building wheel for selenium
+  Building wheel for trio (pyproject.toml): started
+  Building wheel for trio (pyproject.toml): finished with status 'done'
+  Created wheel for trio: filename=trio-0.30.0-py3-none-any.whl size=499193 sha256=5fcc8a58d8ce2b6f01c6191c4d28768dfab3e30cfb18f0ebcc4b13ff043f5773
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/86/b9/8d/ad1a5c33f34a637565dd807a939f7d316e539c2d3b9edf9387
+  Building wheel for trio-websocket (pyproject.toml): started
+  Building wheel for trio-websocket (pyproject.toml): finished with status 'done'
+  Created wheel for trio-websocket: filename=trio_websocket-0.12.2-py3-none-any.whl size=21317 sha256=1f4e528e68e318e79f24218dd069c1bf1189d6b0271627db123dfdf1fab4083a
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/74/ed/42/a421a2dde85146bea3c47003dc44689d73c27fd874916c1944
+  DEPRECATION: Building 'pysocks' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'pysocks'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for pysocks (setup.py): started
+  Building wheel for pysocks (setup.py): finished with status 'done'
+  Created wheel for pysocks: filename=pysocks-1.7.1-py3-none-any.whl size=16673 sha256=802cdc8c620856e28a13433df9a7b3980eb6ed1c39fe0fc5a4988d34c0ea58ee
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/74/e4/88/87388c0c5670182310ae314059df736bdec159d668cee88e97
+  DEPRECATION: Building 'websocket-client' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'websocket-client'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for websocket-client (setup.py): started
+  Building wheel for websocket-client (setup.py): finished with status 'done'
+  Created wheel for websocket-client: filename=websocket_client-1.8.0-py3-none-any.whl size=58926 sha256=273cb29877bea63ed2b7dc08b0c7983cc887bc558df169f31edc63d06be87fe2
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/db/95/4c/ef5d3b45a99507b66302586dd3077fc8f9ae40d3f3ecd51f01
+  DEPRECATION: Building 'webdriver-manager' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'webdriver-manager'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for webdriver-manager (setup.py): started
+  Building wheel for webdriver-manager (setup.py): finished with status 'done'
+  Created wheel for webdriver-manager: filename=webdriver_manager-4.0.2-py2.py3-none-any.whl size=27868 sha256=180dd0d500b90d49e01209badb873b255b1a3b8daa59ebf01111f8f11b63113a
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/c8/f1/cb/4ceb828d5cb02b9ade2e9a2757ae9b10daa1e2121d412d95a5
+  Building wheel for pyinstaller (pyproject.toml): started
+  Building wheel for pyinstaller (pyproject.toml): finished with status 'done'
+  Created wheel for pyinstaller: filename=pyinstaller-6.13.0-py3-none-any.whl size=2210799 sha256=ad5cb31bc41a5328c0ddb332f8763815cf258c0a67f7e4f1e10a44a333405dae
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/1a/5f/9f/4d209633c2fd856a3e33299b981e88cb100317472878e0f899
+  Building wheel for attrs (pyproject.toml): started
+  Building wheel for attrs (pyproject.toml): finished with status 'done'
+  Created wheel for attrs: filename=attrs-25.3.0-py3-none-any.whl size=63815 sha256=f00c4a2bab8b8456017402367c0b830ec51b5720199d144f79d44d82dd222385
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/1e/62/7e/e82aff583a877538297552f6edc10441ee50fbf7b0bdc717e0
+  DEPRECATION: Building 'macholib' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'macholib'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for macholib (setup.py): started
+  Building wheel for macholib (setup.py): finished with status 'done'
+  Created wheel for macholib: filename=macholib-1.16.3-py2.py3-none-any.whl size=38197 sha256=671ce28d259b426cacb4962f8dfae1b449c621e4bd361924f01af0033f9d3870
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/6f/b2/68/b8c7f0c4615a32b48d88c441e8e8877bb7721f5877ae19b483
+  DEPRECATION: Building 'altgraph' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'altgraph'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for altgraph (setup.py): started
+  Building wheel for altgraph (setup.py): finished with status 'done'
+  Created wheel for altgraph: filename=altgraph-0.17.4-py2.py3-none-any.whl size=21312 sha256=16fc99ac7bbcff2a2ba4800f412674dcd94a1077c57380a7aa61c370ccf9b3f1
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/bf/08/c2/9fb180ebe182bbb0f6b8848a633a7d434bde37a208faf662ce
+  Building wheel for outcome (pyproject.toml): started
+  Building wheel for outcome (pyproject.toml): finished with status 'done'
+  Created wheel for outcome: filename=outcome-1.3.0.post0-py2.py3-none-any.whl size=10814 sha256=deb0eb747c016f9dcf871a06338660f1f0d37ba1ab7c918af889a6042bb951cd
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/52/f8/20/eded9be873be2c4e0c1bba9e9cca2743c5e1bd893f897af819
+  Building wheel for pyinstaller-hooks-contrib (pyproject.toml): started
+  Building wheel for pyinstaller-hooks-contrib (pyproject.toml): finished with status 'done'
+  Created wheel for pyinstaller-hooks-contrib: filename=pyinstaller_hooks_contrib-2025.4-py3-none-any.whl size=434450 sha256=a0074e4ed092d5670052300a856af727157065a94802155a29acd49abb0f6335
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/20/26/31/8fe88422c732d3e3fc7a0d887e311051fcd5da3bb157e0ca6d
+  Building wheel for sniffio (pyproject.toml): started
+  Building wheel for sniffio (pyproject.toml): finished with status 'done'
+  Created wheel for sniffio: filename=sniffio-1.3.1-py3-none-any.whl size=10282 sha256=b81a7fce350c5a3eb260085a6a5c1857e0f1cb46557f19de9fd672ef669f31fc
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/75/9b/6f/4d780b5c98b6838833b316bbe08a91e8d7e83135a61a96149c
+  Building wheel for soupsieve (pyproject.toml): started
+  Building wheel for soupsieve (pyproject.toml): finished with status 'done'
+  Created wheel for soupsieve: filename=soupsieve-2.7-py3-none-any.whl size=36677 sha256=6e60cc5c1ffaf1cebcc12e8188320b72071e922c2e897f737cadce79ad5d30c4
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/b4/15/ec/ff4bd1f18e348b3d95515bfd513f3e3a8f2c03d3a50c366d60
+  DEPRECATION: Building 'wsproto' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'wsproto'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for wsproto (setup.py): started
+  Building wheel for wsproto (setup.py): finished with status 'done'
+  Created wheel for wsproto: filename=wsproto-1.2.0-py3-none-any.whl size=24315 sha256=76746c75df63a2a2c69bd3b646ba8adec6d8a9ccec3484f3042379bb77dac432
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/9f/eb/fa/becf91487ed6b0e3f81699a88b37377c8b05e76bf918c80c0b
+  Building wheel for h11 (pyproject.toml): started
+  Building wheel for h11 (pyproject.toml): finished with status 'done'
+  Created wheel for h11: filename=h11-0.16.0-py3-none-any.whl size=37514 sha256=058e95214fb9e5cce185554988a46ddf6ca60545a36521302fd8fc291214d182
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/c1/9d/15/55df122e5f6efdeb9b5f8c3e55642a2749eebd2f744d8629f0
+  DEPRECATION: Building 'python-dotenv' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'python-dotenv'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for python-dotenv (setup.py): started
+  Building wheel for python-dotenv (setup.py): finished with status 'done'
+  Created wheel for python-dotenv: filename=python_dotenv-1.1.0-py3-none-any.whl size=20256 sha256=63138b43c915f45ff681e00aed2785f39a8b05d39372e0ef0ee3e52628a2d207
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/09/b1/c1/7ebeebabea79a53053b1ae8cb2857ffcafa4a590100315e0f2
+  DEPRECATION: Building 'sortedcontainers' using the legacy setup.py bdist_wheel mechanism, which will be removed in a future version. pip 25.3 will enforce this behaviour change. A possible replacement is to use the standardized build interface by setting the `--use-pep517` option, (possibly combined with `--no-build-isolation`), or adding a `pyproject.toml` file to the source tree of 'sortedcontainers'. Discussion can be found at https://github.com/pypa/pip/issues/6334
+  Building wheel for sortedcontainers (setup.py): started
+  Building wheel for sortedcontainers (setup.py): finished with status 'done'
+  Created wheel for sortedcontainers: filename=sortedcontainers-2.4.0-py3-none-any.whl size=29633 sha256=43ea1555bf146bf807b3cbd570583170173e0665a81c3956e08c6153a35a26ea
+  Stored in directory: /Users/runner/Library/Caches/pip/wheels/df/3e/7a/42e9aa96c3b3c6593d0107498ca80afe708a85480c1f55cb66
+Successfully built mutagen tkinterdnd2 requests charset_normalizer idna urllib3 beautifulsoup4 trio trio-websocket pysocks websocket-client webdriver-manager pyinstaller attrs macholib altgraph outcome pyinstaller-hooks-contrib sniffio soupsieve wsproto h11 python-dotenv sortedcontainers
+Failed to build selenium
+ERROR: Failed to build installable wheels for some pyproject.toml based projects (selenium)

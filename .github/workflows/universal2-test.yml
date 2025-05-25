@@ -31,6 +31,7 @@ jobs:
           brew install pyenv
           python3 -m pip install --upgrade pip setuptools wheel
           export ARCHFLAGS="-arch x86_64 -arch arm64"
+          rustup target add x86_64-apple-darwin
           pip install --no-binary=:all: -r requirements.txt
           pyinstaller Spotify2MP3-macOS.spec  --clean -y --log-level DEBUG
           cd dist
