@@ -86,7 +86,7 @@ jobs:
       run: |
         pyinstaller Spotify2MP3-macOS.spec
         cd dist
-        ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS_ARM.zip
+        ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS.zip
 
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
@@ -96,8 +96,48 @@ jobs:
         draft: true
         prerelease: false
         files: |
-          dist/Spotify2MP3_macOS_ARM.zip
-          dist/Spotify2MP3_macOS_Intel.zip
+          dist/Spotify2MP3_macOS.zip
+
+  build-macos-x64:
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+        
+    - name: Install dependencies
+      run: |
+        arch -x86_64 python -m pip install --upgrade pip
+        arch -x86_64 pip install -r requirements.txt
+        arch -x86_64 pip install -U "yt-dlp[default]"
+
+    - name: Download and setup ffmpeg
+      run: |
+        mkdir -p ffmpeg
+        cd ffmpeg
+        curl -L https://evermeet.cx/ffmpeg/ffmpeg-7.1.1.7z -o ffmpeg.7z
+        tar -xvf ffmpeg.7z
+        rm -rf ffmpeg.7z
+
+    - name: Build with PyInstaller and create zip file
+      run: |
+        arch -x86_64 pyinstaller Spotify2MP3-macOS.spec
+        cd dist
+        ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS_x64.zip
+
+    - name: Create GitHub Draft
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ env.LEVEL }}
+        name: Spotify2MP3 v${{ env.LEVEL }}
+        draft: true
+        prerelease: false
+        files: |
+          dist/Spotify2MP3_macOS_x64.zip
 
   build-linux-x64:
     runs-on: ubuntu-22.04

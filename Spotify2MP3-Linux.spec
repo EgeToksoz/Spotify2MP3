@@ -10,7 +10,6 @@ a = Analysis(
     binaries=[],
     datas=[
         ('ffmpeg/ffmpeg', 'ffmpeg'),
-        ('yt-dlp/yt-dlp', 'yt-dlp'),
         ('config.json', '.'),
         ('icon.png', '.'),
     ],
