@@ -13,6 +13,7 @@ from datetime import timedelta
 from mutagen.easyid3 import EasyID3
 from mutagen.mp4 import MP4, MP4Tags
 from tkinter import ttk
+import yt_dlp
 # Optional drag & drop support import
 try:
     from tkinterdnd2 import DND_FILES, TkinterDnD
@@ -799,22 +800,13 @@ class Spotify2MP3GUI:
             if platform.system() == "Darwin":  # macOS
                 ffmpeg_path = resource_path("ffmpeg")
                 ffmpeg_exe = os.path.join(ffmpeg_path, "ffmpeg")
-                yt_dlp_path = resource_path("yt-dlp")
-                yt_dlp_exe = os.path.join(yt_dlp_path, "yt-dlp")
             else:
                 ffmpeg_path = resource_path("ffmpeg")
                 ffmpeg_exe = os.path.join(ffmpeg_path, "ffmpeg.exe" if platform.system() == "Windows" else "ffmpeg")
                 print(ffmpeg_exe)
-                yt_dlp_path = resource_path("yt-dlp")
-                yt_dlp_exe = os.path.join(yt_dlp_path, "yt-dlp.exe" if platform.system() == "Windows" else "yt-dlp")
-                print(yt_dlp_exe)
 
             if not os.path.isfile(ffmpeg_exe):
                 messagebox.showerror("Missing FFmpeg","ffmpeg not found. Please install FFmpeg and ensure it's in your PATH.")
-                return
-
-            if not os.path.isfile(yt_dlp_exe):
-                messagebox.showerror("Missing yt-dlp","yt-dlp not found. Please install yt-dlp and ensure it's in your PATH.")
                 return
 
             rows = list(csv.DictReader(open(self.csv_path, newline='', encoding='utf-8')))
@@ -832,76 +824,86 @@ class Spotify2MP3GUI:
                 for variant in cfg['variants']:
                     q = f"{safe_title} {safe_artist} {variant}".strip()
                     self.status_label.config(text=f"[{i}/{total}] Searching: {q}")
-                    cmd = [yt_dlp_exe, f'--ffmpeg-location={ffmpeg_path}', '-f', 'bestaudio[ext=m4a]/bestaudio']
-                    # Thumbnail embedding
-                    if self.thumb_var.get():
-                        cmd += ['--embed-thumbnail', '--add-metadata']
-                    if self.mp3_var.get():
-                        cmd += ['--extract-audio', '--audio-format', 'mp3']
-                        if self.quality_var.get():
-                            cmd += ['--audio-quality', '0']
-                    else:
-                        cmd += ['--remux-video', 'm4a']
-                    cmd += ['--output', os.path.join(output_dir, '%(title)s.%(ext)s'), '--no-playlist', f'ytsearch1:{q}']
-                    if self.exclude_instr_var.get():
-                        cmd += ['--reject-title', '(?i)instrumental']
-                    creationflags = subprocess.CREATE_NO_WINDOW if platform.system() == "Windows" else 0
-                    result = subprocess.run(cmd, capture_output=True, text=True, creationflags=creationflags)
+                    
+                    # Configure yt-dlp options
+                    ydl_opts = {
+                        'ffmpeg_location': ffmpeg_path,
+                        'format': 'bestaudio[ext=m4a]/bestaudio',
+                        'outtmpl': os.path.join(output_dir, '%(title)s.%(ext)s'),
+                        'noplaylist': True,
+                        'default_search': f'ytsearch1:{q}'
+                    }
 
-                    # Check if the search returned 0 items
-                    if "Downloading 0 items" in result.stdout:
-                        print(f"Could not find song: {title} by {artist}")
-                        # Only add to not_found_songs if this is the last variant
-                        if variant == cfg['variants'][-1]:
-                                not_found_songs.append({
-                                    'Track Name': title,
-                                    'Artist Name(s)': artist,
-                                    'Album Name': album,
-                                    'Track Number': i,
-                                    'Error': 'No search results found',
-                                })
-                        continue
+                    # Add thumbnail embedding options if enabled
+                    if self.thumb_var.get():
+                        ydl_opts.update({
+                            'writethumbnail': True,
+                            'embed_thumbnail': True,
+                            'add_metadata': True
+                        })
+
+                    # Configure audio format options
+                    if self.mp3_var.get():
+                        ydl_opts.update({
+                            'postprocessors': [{
+                                'key': 'FFmpegExtractAudio',
+                                'preferredcodec': 'mp3',
+                                'preferredquality': '0' if self.quality_var.get() else '5'
+                            }]
+                        })
+                    else:
+                        ydl_opts.update({
+                            'postprocessors': [{
+                                'key': 'FFmpegVideoRemuxer',
+                                'preferedformat': 'm4a'
+                            }]
+                        })
+
+                    # Add instrumental exclusion if enabled
+                    if self.exclude_instr_var.get():
+                        ydl_opts['match_filter'] = lambda info: None if 'instrumental' in info.get('title', '').lower() else True
+
+                    try:
+                        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                            error_code = ydl.download([q])
                             
-                    if result.returncode != 0:
-                        print(f"Error output: {result.stderr}")
-                        # Check if the error is due to not finding the song
-                        if "No video results" in result.stderr or "No matches found" in result.stderr:
-                            print(f"Could not find song: {title} by {artist}")
-                            # Only add to not_found_songs if this is the last variant
-                            if variant == cfg['variants'][-1]:
-                                not_found_songs.append({
-                                    'Track Name': title,
-                                    'Artist Name(s)': artist,
-                                    'Album Name': album,
-                                    'Track Number': i,
-                                    'Error': 'Song not found',
-                                })
-                            continue
-                        else:
-                                # Only add to not_found_songs if this is the last variant
+                            if error_code != 0:
+                                print(f"Error downloading: {q}")
                                 if variant == cfg['variants'][-1]:
                                     not_found_songs.append({
                                         'Track Name': title,
                                         'Artist Name(s)': artist,
                                         'Album Name': album,
                                         'Track Number': i,
-                                        'Error': result.stderr.strip(),
+                                        'Error': 'Download failed'
                                     })
                                 continue
+                    except Exception as e:
+                        print(f"Error: {str(e)}")
+                        if variant == cfg['variants'][-1]:
+                            not_found_songs.append({
+                                'Track Name': title,
+                                'Artist Name(s)': artist,
+                                'Album Name': album,
+                                'Track Number': i,
+                                'Error': str(e)
+                            })
+                        continue
+
                     new_files = [fn for fn in os.listdir(output_dir)
-                                    if fn.lower().endswith(('.mp3', '.m4a')) and fn not in downloaded]
+                                if fn.lower().endswith(('.mp3', '.m4a')) and fn not in downloaded]
                     if new_files:
                         break
                     else:
                         print("No new files found after download attempt")
-                        # Only add to not_found_songs if this is the last variant
                         if variant == cfg['variants'][-1]:
-                                not_found_songs.append({
-                                    'Track Name': title,
-                                    'Artist Name(s)': artist,
-                                    'Album Name': album,
-                                    'Track Number': i,
-                                })
+                            not_found_songs.append({
+                                'Track Name': title,
+                                'Artist Name(s)': artist,
+                                'Album Name': album,
+                                'Track Number': i,
+                                'Error': 'No files downloaded'
+                            })
 
                     if not new_files:
                         continue
