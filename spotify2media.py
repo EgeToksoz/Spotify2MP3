@@ -838,12 +838,17 @@ class Spotify2MP3GUI:
                     if self.thumb_var.get():
                         ydl_opts.update({
                             'writethumbnail': True,
-                            'embed_thumbnail': True,
-                            'add_metadata': True
+                            'postprocessors': [{
+                                'key': 'FFmpegExtractAudio',
+                                'preferredcodec': 'mp3' if self.mp3_var.get() else 'm4a',
+                                'preferredquality': '0' if self.quality_var.get() else '5'
+                            }, {
+                                'key': 'EmbedThumbnail',
+                                'already_have_thumbnail': False
+                            }]
                         })
-
-                    # Configure audio format options
-                    if self.mp3_var.get():
+                    # Configure audio format options without thumbnails
+                    elif self.mp3_var.get():
                         ydl_opts.update({
                             'postprocessors': [{
                                 'key': 'FFmpegExtractAudio',
