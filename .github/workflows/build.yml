@@ -98,7 +98,7 @@ jobs:
         files: |
           dist/Spotify2MP3_macOS.zip
 
-  build-macos-x64:
+  build-macos-intel:
     runs-on: macos-latest
     
     steps:
@@ -127,7 +127,7 @@ jobs:
       run: |
         arch -x86_64 pyinstaller Spotify2MP3-macOS.spec
         cd dist
-        ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS_x64.zip
+        ditto -c -k --keepParent Spotify2MP3.app Spotify2MP3_macOS_Intel.zip
 
     - name: Create GitHub Draft
       uses: softprops/action-gh-release@v1
@@ -137,7 +137,7 @@ jobs:
         draft: true
         prerelease: false
         files: |
-          dist/Spotify2MP3_macOS_x64.zip
+          dist/Spotify2MP3_macOS_Intel.zip
 
   build-linux-x64:
     runs-on: ubuntu-22.04
